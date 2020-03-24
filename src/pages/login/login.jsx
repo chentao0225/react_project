@@ -1,11 +1,21 @@
 import React, { Component } from 'react'
-import { Form, Input, Button} from 'antd'
+import { Form, Input, Button,message} from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import {reqLogin} from '../../api'
 import './css/login.less'
 import logo from './images/logo.png'
 export default class Login extends Component {
-    onFinish = () => {
-        console.log('表单提交了');
+    onFinish = async(values) => {
+        console.log(values)
+        let result=await reqLogin(values)
+        console.log(result)
+        const {status,msg,data}=result
+        if(status===0){
+            message.success('登录成功',1)
+            this.props.history.replace('/admin')
+        }else{
+            message.warning(msg)
+        }
     }
     pwdVlidator=(rule, value)=>{
         if(!value){
