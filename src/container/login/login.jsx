@@ -1,12 +1,17 @@
 import React, { Component } from 'react'
-import {Redirect} from 'react-router-dom'
 import { Form, Input, Button,message} from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import {connect} from 'react-redux'
 import {reqLogin} from '../../api'
+import checkLogin from '../check_login/check_login'
 import {seveUserInfo} from '../../redux/actions/login_action'
 import './css/login.less'
 import logo from './images/logo.png'
+@connect(
+    state=>({userInfo:state.userinfo}),
+    {seveUserInfo}
+)
+@checkLogin
 class Login extends Component {
     onFinish = async(values) => {
         let result=await reqLogin(values)
@@ -32,9 +37,7 @@ class Login extends Component {
         return Promise.resolve()
     }
     render() {
-        if(this.props.userinfo.isLogin){
-            return <Redirect to='/admin'/>
-        }
+        
         return (
             <div id='login'>
                <div className="login-header">
@@ -96,7 +99,4 @@ class Login extends Component {
         )
     }
 }
-export default connect(
-    state=>({userinfo:state.userinfo}),
-    {seveUserInfo}
-)(Login)
+export default Login
