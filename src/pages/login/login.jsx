@@ -1,18 +1,20 @@
 import React, { Component } from 'react'
+import {Redirect} from 'react-router-dom'
 import { Form, Input, Button,message} from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import {connect} from 'react-redux'
 import {reqLogin} from '../../api'
+import {seveUserInfo} from '../../redux/actions/login_action'
 import './css/login.less'
 import logo from './images/logo.png'
-export default class Login extends Component {
+class Login extends Component {
     onFinish = async(values) => {
-        console.log(values)
         let result=await reqLogin(values)
-        console.log(result)
         const {status,msg,data}=result
         if(status===0){
             message.success('登录成功',1)
             this.props.history.replace('/admin')
+            this.props.seveUserInfo(data)
         }else{
             message.warning(msg)
         }
@@ -30,6 +32,9 @@ export default class Login extends Component {
         return Promise.resolve()
     }
     render() {
+        if(this.props.userinfo.isLogin){
+            return <Redirect to='/admin'/>
+        }
         return (
             <div id='login'>
                <div className="login-header">
@@ -91,3 +96,7 @@ export default class Login extends Component {
         )
     }
 }
+export default connect(
+    state=>({userinfo:state.userinfo}),
+    {seveUserInfo}
+)(Login)
