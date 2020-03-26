@@ -3,7 +3,9 @@ import {Button,Modal} from 'antd'
 import {FullscreenOutlined,FullscreenExitOutlined,ExclamationCircleOutlined} from '@ant-design/icons'
 import {connect} from 'react-redux'
 import screenfull from 'screenfull'
+import {reqWeatherData} from '../../../api'
 import { deleteUserInfo } from '../../../redux/actions/login_action'
+import dayjs from 'dayjs'
 import './header.less'
 const {confirm} = Modal
 @connect(
@@ -13,15 +15,34 @@ const {confirm} = Modal
 class Header extends Component {
     state={
         isFull:false,
+        date:dayjs().format('YYYY年MM月DD日HH:mm:ss'),
+        weatherData:{}
     }
     switchFullScreen=()=>{
         screenfull.toggle()
+    }
+    getWeatherData=async()=>{
+        let result=await reqWeatherData()
+        this.setState({
+            weatherData:{
+                img:result.dayPictureUrl,
+                temperature:result.temperature,
+				weather:result.weather
+            }
+        })
     }
     componentDidMount(){
         screenfull.on('change',()=>{
             let {isFull}=this.state
             this.setState({isFull:!isFull})
         })
+        this.timerId=setInterval(()=>{
+            this.setState({date:dayjs().format('YYYY年MM月DD日HH:mm:ss')})
+        },1000)
+        this.getWeatherData()
+    }
+    componentWillUnmount(){
+        clearInterval(this.timerId)
     }
     logout=()=>{
         confirm({
@@ -38,6 +59,7 @@ class Header extends Component {
     render() {
         const {username}=this.props.userInfo
         const {isFull}=this.state
+        const {img,weather,temperature} = this.state.weatherData
         return (
             <div className='header'>
                 <div className="header-top">
@@ -54,9 +76,9 @@ class Header extends Component {
                         首页
                     </div>
                     <div className="header-bottom-right">
-                        <span>2020年3月25日21:35:30</span>
-                        <img src="" alt="实时天气"/>
-                        <span>多云 </span>
+                        <span>{this.state.date}</span>
+                        <img src={img} alt="实时天气"/>
+                        <span>{weather}  温度：{temperature}</span>
                     </div>
                 </div>
             </div>
