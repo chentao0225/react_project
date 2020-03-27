@@ -6,7 +6,7 @@ import {reqLogin} from '../../api'
 import checkLogin from '../check_login/check_login'
 import {seveUserInfo} from '../../redux/actions/login_action'
 import './css/login.less'
-import logo from './images/logo.png'
+import logo from '../../static/images/logo.png'
 @connect(
     state=>({userInfo:state.userinfo}),
     {seveUserInfo}
